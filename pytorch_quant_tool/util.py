@@ -12,7 +12,7 @@ def fuse_model(model, rules, inplace=True):
     Return:
         A new fused model, if inplace is False.
     """
-    assert model is nn.Module
+    assert isinstance(model, nn.Module)
 
     for m in model.named_modules():
         for rule in rules:
@@ -20,7 +20,7 @@ def fuse_model(model, rules, inplace=True):
     modules_to_fuse = list()
     for rule in rules:
         modules_to_fuse += rule.names_lists()
-
+    print(modules_to_fuse)
     model = quant.fuse_modules(model, modules_to_fuse, inplace=inplace) 
     return model
 
