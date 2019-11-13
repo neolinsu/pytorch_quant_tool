@@ -35,7 +35,7 @@ def post_training_quant(fused_model, data_loader=None, batches=None, inplace=Tru
     Return:
         A new quanted model, if inplace is False.
     """
-    if fused_model.qconfig is None:
+    if not hasattr(fused_model, "qconfig"):
         fused_model.qconfig = quant.get_default_qconfig('fbgemm')
     if inplace:
         quant.prepare(fused_model, inplace=True)
@@ -44,8 +44,10 @@ def post_training_quant(fused_model, data_loader=None, batches=None, inplace=Tru
 
     if data_loader is not None:
         for idx, _in in enumerate(data_loader):
+            if batches is not None:
+                print(f'\r{idx} / {batches}', end='')
             output = fused_model(_in)
-            if batches is not None and idx > batches:
+            if batches is not None and idx >= batches:
                 break
     if inplace:
         quant.convert(fused_model, inplace=True)
